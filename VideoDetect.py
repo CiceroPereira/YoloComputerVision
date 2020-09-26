@@ -11,7 +11,6 @@ time.sleep(1.0)
 while(vs.isRunning()):
 
     frame = vs.read()
-
     img = cv2.imwrite('frame.jpg', frame)
     new_image = cv2.imread("frame.jpg")
     frame_detected = det.yolo(new_image)
