@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import requests
 from Stream import Stream
 from yolov4 import Detections
 import time
