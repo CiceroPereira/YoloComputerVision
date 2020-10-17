@@ -4,11 +4,15 @@ import numpy as np
 class Detections:
 
 	def yolo(self, image):
-	
+		
+		#file_name = "Images/knife_" + str(image_index) + ".txt"	
 		weights = "Weights/yolov4-obj_final.weights"
 		config = "Config/yolov4-obj.cfg"
 
 		net = cv2.dnn.readNetFromDarknet(config, weights)
+		#net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+		#net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA_FP16)
+
 		classes = []
 		with open("Config/obj.names","r") as f:
 		    classes = [line.strip() for line in f.readlines()]
@@ -35,6 +39,7 @@ class Detections:
 		class_ids=[]
 		confidences=[]
 		boxes=[]
+		centers=[]
 		for out in outs:
 		    for detection in out:
 		        scores = detection[5:]
@@ -49,12 +54,14 @@ class Detections:
 		        
 		            x=int(center_x - w/2)
 		            y=int(center_y - h/2)
-		     
+
 		            
+		            centers.append([center_x, center_y])
 		            boxes.append([x,y,w,h])
 		            confidences.append(float(confidence)) 
 		            class_ids.append(class_id) 
-
+		        
+					
 		indexes = cv2.dnn.NMSBoxes(boxes,confidences,0.4,0.6)
 
 
@@ -62,10 +69,14 @@ class Detections:
 		for i in range(len(boxes)):
 		    if i in indexes:
 		        x,y,w,h = boxes[i]
+		        center_x, center_y = centers[i]
 		        label = str(classes[class_ids[i]])
 		        color = colors[int(class_ids[i])]
 		        cv2.rectangle(img,(x,y),(x+w,y+h),color,2)
 		        cv2.putText(img,label + ': ' + str(confidences[i]),(x,y+30),font,1,(0,255,255),2)
-		            
+		   #     f = open(file_name, "a")
+		    #    string = str(class_ids[i]) + " " + str(center_x/width)  + " " + str(center_y/height)  + " " + str(w/width)  + " " + str(h/height) + "\n"
+		     #   f.write(string)
+		        f.close()		       
 
 		return img;
